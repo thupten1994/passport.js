@@ -33,13 +33,13 @@ app.get("/",checkAuthenticate, (req,res)=>{
 
 app.get("/login",notcheckAuthenticate,(req,res)=>{
 
- res.render("l")
+ res.render("login")
 })
 
 
 
 app.get("/register",notcheckAuthenticate,(req,res)=>{
- res.render("r")
+ res.render("register")
 })
 
 
@@ -59,10 +59,10 @@ app.post("/register",notcheckAuthenticate,  async(req,res)=>{
         email : req.body.email,
         password : req.body.password
       })
-      res.render("l")
+      res.render("login")
  }
  catch(e){
-     res.render("r")
+     res.render("register")
  }
 
 })
