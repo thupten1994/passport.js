@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-white">
+
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="card" style="max-width: 600px; width: 100%; background-color: #333;">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Welcome <%=name %></h2>
+
+                <!-- Display user's username (or any other info you want to show) -->
+                <p class="text-center">You are logged in as: <%=name %></p>
+
+                <!-- Optionally, display additional user information -->
+                <p class="text-center">User ID:<%=id %></p>
+
+                <!-- Logout button -->
+                <form action="/logout?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-danger btn-block">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
