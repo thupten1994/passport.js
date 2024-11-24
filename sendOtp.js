@@ -5,7 +5,7 @@ function sendOtp(maildId,otp){
     service: 'gmail', // Gmail service
     auth: {
       user: "khawatech@gmail.com", // Your Gmail email address
-      pass: "xiwt wimx aoyf dthp"   // Your Gmail password (or app password if 2FA is enabled)
+      pass: "xiwt wimx"   // Your Gmail password (or app password if 2FA is enabled)
     }
   });
   
