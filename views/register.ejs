@@ -13,6 +13,11 @@
         <div class="card w-100" style="max-width: 400px;">
             <div class="card-body">
                 <h2 class="card-title text-center">Register</h2>
+                <% if (messages && messages.error) { %>
+                    <div class="alert alert-danger" role="alert">
+                        <%= messages.error %>
+                    </div>
+                <% } %>
                 <form action="/register" method="POST">
                     <div class="form-group">
                         <label for="name">Name</label>

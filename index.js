@@ -1,11 +1,18 @@
 const express = require("express")
 const flash = require("express-flash")
 const session = require("express-session")
-const { startSession } = require("mongoose")
 const passport = require("passport")
 const Strategy = require("passport-local").Strategy
 const methodoverride = require("method-override")
 const app = express()
+const sendOtp = require("./sendOtp")
+const User = require("./model/user")
+const mongoose = require("mongoose")
+
+mongoose.connect("mongodb://localhost:27017/user")
+        .then(()=>{console.log("connected to mongodb")})
+        .catch(e=>{console.log(e)})
+
 
 app.use(express.json())
 app.set("view engine", "ejs")
@@ -24,12 +31,14 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
 app.use(methodoverride("_method"))
-const users= []
 
 app.get("/",checkAuthenticate, (req,res)=>{
 
-    res.render("h", { name : req.user.name, id : req.user.id})
+    res.render("home", { name : req.user.name, id : req.user.id})
+
 })
+
+
 
 app.get("/login",notcheckAuthenticate,(req,res)=>{
 
@@ -48,25 +57,46 @@ app.post("/login",notcheckAuthenticate,passport.authenticate("local",{
  failureRedirect :"/login",
  failureFlash: true
 }))
+app.post("/verifyUser",notcheckAuthenticate,(req,res)=>{
+            
 
+     if (req.body.otp === 1000){
+        res.redirect("/login",{message : " User verified"})
+     } 
+     res.redirect("/register",{message : " wrong otp"})
+    
+   })
 
-app.post("/register",notcheckAuthenticate,  async(req,res)=>{
+app.post("/register",notcheckAuthenticate,async(req,res)=>{
+    
 
- try{
-       users.push ({
-        id: Date.now(),
+ try{ 
+       const user = new User({
         name : req.body.name,
         email : req.body.email,
         password : req.body.password
-      })
-      res.render("login")
+    })  
+         
+        const sendmail = sendOtp(user.email,"5656")
+         console.log(await user.save())
+         return  res.render("verifyUser")
  }
  catch(e){
-     res.render("register")
+     res.render("register",{message : " user already in use"})
  }
 
 })
 
+app.post("/verify-otp",(req,res)=>{
+
+    console.log(req.body.otp)
+
+    if(req.body.otp==="5656"){
+
+        res.render("home",{name : req.user.name, id : req.user.id})
+    }
+    return res.render("verifyUser", {message : " wrong passpword"})
+})
 app.delete("/logout",(req,res)=>{
  req.logout(function(err) {
      if (err) {
@@ -75,16 +105,20 @@ app.delete("/logout",(req,res)=>{
      res.redirect('/');  // Redirect after successful logout
  });
 })
+
+
 passport.use( 
  new Strategy({ 
      usernameField : "email",
      passwordField : "password"
  },
- (email,password,done)=>{
+ async(email,password,done)=>{
+     
+     console.log(email)
+      const user =  await User.findOne({email:email})
+      if(!user) return done(null,false, {message : "Invalid email Id"})
 
-      const user = users.find(u=>u.email===email)
-      if(!user) return done(null,false, {message : "invalid emailId"})
-
+        console.log(` this is password ${user.password}`)
      if(user.password!==password){
          return done(null,false,{message :"invalid password"})
      }
@@ -95,9 +129,9 @@ passport.serializeUser((user,done)=>{
  return done(null,user.id)
 })
 
-passport.deserializeUser((id,done)=>{
+passport.deserializeUser(async(id,done)=>{
            
- const u = users.find(u=>u.id===id)
+ const u =  await User.findOne({_id : id})
   return done(null,u)
 })
 
